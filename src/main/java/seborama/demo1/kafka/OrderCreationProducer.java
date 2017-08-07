@@ -4,24 +4,23 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Properties;
 
 import static org.apache.kafka.common.utils.Utils.sleep;
 
-public class OrderCreationProducer {
+public class OrderCreationProducer implements Closeable {
 
-    public static final String ORDER_CREATION_TOPIC = "OrderCreationTopic";
+    static final String ORDER_CREATION_TOPIC = "OrderCreationTopic";
+    private final Producer<String, String> producer;
 
-    public static void main(String[] args) {
+    public OrderCreationProducer() {
         Properties props = configure();
-        try (Producer<String, String> producer = new KafkaProducer<>(props)) {
-            sendMessages(producer);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        producer = new KafkaProducer<>(props);
     }
 
-    private static void sendMessages(Producer<String, String> producer) {
+    void sendMessages() {
         for (int i = 0; i < 100; i++) {
             String msg = "Message " + i;
             producer.send(new ProducerRecord<>(ORDER_CREATION_TOPIC, msg));
@@ -41,5 +40,10 @@ public class OrderCreationProducer {
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         return props;
+    }
+
+    @Override
+    public void close() throws IOException {
+        producer.close();
     }
 }

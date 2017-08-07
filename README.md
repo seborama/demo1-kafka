@@ -18,16 +18,16 @@ Under construction...
 mvn package
 ```
 
-### Run the order creation producer
+### Run the order creation server
 
 ```bash
-java -cp target/kafka-java-example-0.1.0-SNAPSHOT-jar-with-dependencies.jar seborama.demo1.kafka.OrderCreationProducer
+java -cp target/kafka-java-example-0.1.0-SNAPSHOT-jar-with-dependencies.jar seborama.demo1.kafka.OrderCreationServer
 ```
 
-### Run the order creation consumer
+### Run the order fulfilment server
 
 ```bash
-java -cp target/kafka-java-example-0.1.0-SNAPSHOT-jar-with-dependencies.jar seborama.demo1.kafka.OrderCreationConsumer
+java -cp target/kafka-java-example-0.1.0-SNAPSHOT-jar-with-dependencies.jar seborama.demo1.kafka.OrderFulfilmentServer
 ```
 
 ## Producers

@@ -8,24 +8,20 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.Properties;
 
-import static org.apache.kafka.common.utils.Utils.sleep;
-
 public class OrderFulfilmentProducer implements Closeable {
 
-    public static final String ORDER_CREATION_TOPIC = "OrderFulfilmentTopic";
+    private static final String ORDER_CREATION_TOPIC = "OrderFulfilmentTopic";
     private final Producer<String, String> producer;
 
-    public OrderFulfilmentProducer() {
+    OrderFulfilmentProducer() {
         Properties props = configure();
         producer = new KafkaProducer<>(props);
     }
 
-    private void sendMessage(String msg) {
-        for (int i = 0; i < 100; i++) {
-            producer.send(new ProducerRecord<>(ORDER_CREATION_TOPIC, msg));
-            System.out.println("Sent:" + msg);
-            sleep(1000);
-        }
+    void sendMessage(String key, String value) {
+        producer.send(new ProducerRecord<>(ORDER_CREATION_TOPIC, key, value));
+        System.out.println("Sent:" + value);
+//        sleep(1000);
     }
 
     private Properties configure() {

@@ -4,23 +4,30 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Properties;
 
-import static seborama.demo1.kafka.OrderCreationProducer.ORDER_CREATION_TOPIC;
 import static org.apache.kafka.common.utils.Utils.sleep;
+import static seborama.demo1.kafka.OrderCreationProducer.ORDER_CREATION_TOPIC;
 
-public class OrderCreationConsumer {
+public class OrderCreationConsumer implements Closeable {
 
-    public static final String ORDER_CREATION_GROUP_1 = "order-creation-group-1";
+    private static final String ORDER_CREATION_GROUP_1 = "order-creation-group-1";
+    private KafkaConsumer<String, String> consumer;
+    private MessageArrivedListener listener;
 
-    public static void main(String[] args) {
+    OrderCreationConsumer() {
         final Properties props = configure();
-        final MessageArrivedListener listener = new PushToOrderFulfilmentMessageArrivedListener();
+        listener = new PushToOrderFulfilmentMessageArrivedListener();
 
-        KafkaConsumer<String, String> kafkaConsumer = joinConsumerGroup(props);
+        consumer = joinConsumerGroup(props);
+    }
+
+    void consumerLoop() {
         while (true) {
-            ConsumerRecords<String, String> records = kafkaConsumer.poll(100);
+            ConsumerRecords<String, String> records = consumer.poll(100);
             for (ConsumerRecord<String, String> record : records) {
                 System.out.println("Partition: " + record.partition() + " Offset: " + record.offset()
                         + " Value: " + record.value() + " ThreadID: " + Thread.currentThread().getId());
@@ -47,5 +54,10 @@ public class OrderCreationConsumer {
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         return props;
+    }
+
+    @Override
+    public void close() throws IOException {
+        consumer.close();
     }
 }
