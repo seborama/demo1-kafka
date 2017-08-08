@@ -1,8 +1,9 @@
-package seborama.demo1.kafka;
+package seborama.demo1.kafka.orderfulfilment;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import seborama.demo1.kafka.MessageArrivedListener;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -10,7 +11,7 @@ import java.util.Collections;
 import java.util.Properties;
 
 import static org.apache.kafka.common.utils.Utils.sleep;
-import static seborama.demo1.kafka.OrderCreationProducer.ORDER_CREATION_TOPIC;
+import static seborama.demo1.kafka.ordercreation.OrderCreationProducer.ORDER_CREATION_TOPIC;
 
 public class OrderCreationConsumer implements Closeable {
 

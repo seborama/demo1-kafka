@@ -5,6 +5,7 @@ Ordering System:
   - Order creation
   - Order Fulfilment
   - Order dispatch
+  - Order completion
   - TBC: Order returns?
 
 
@@ -28,6 +29,18 @@ java -cp target/kafka-java-example-0.1.0-SNAPSHOT-jar-with-dependencies.jar sebo
 
 ```bash
 java -cp target/kafka-java-example-0.1.0-SNAPSHOT-jar-with-dependencies.jar seborama.demo1.kafka.OrderFulfilmentServer
+```
+
+### Run the order dispatch server
+
+```bash
+java -cp target/kafka-java-example-0.1.0-SNAPSHOT-jar-with-dependencies.jar seborama.demo1.kafka.OrderDispatchServer
+```
+
+### Run the order completion server
+
+```bash
+java -cp target/kafka-java-example-0.1.0-SNAPSHOT-jar-with-dependencies.jar seborama.demo1.kafka.OrderCompletionServer
 ```
 
 ## Producers

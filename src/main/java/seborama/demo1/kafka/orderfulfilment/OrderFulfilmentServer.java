@@ -1,4 +1,4 @@
-package seborama.demo1.kafka;
+package seborama.demo1.kafka.orderfulfilment;
 
 import java.io.IOException;
 

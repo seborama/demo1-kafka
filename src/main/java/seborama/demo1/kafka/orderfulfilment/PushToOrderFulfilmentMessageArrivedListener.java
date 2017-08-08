@@ -1,6 +1,7 @@
-package seborama.demo1.kafka;
+package seborama.demo1.kafka.orderfulfilment;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import seborama.demo1.kafka.MessageArrivedListener;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -14,8 +15,8 @@ public class PushToOrderFulfilmentMessageArrivedListener implements MessageArriv
 
     @Override
     public void onMessageArrived(final ConsumerRecord<String, String> record) {
-        producer.sendMessage(record.key(), record.value());
         System.out.println("record received - ready to push to order fulfilment");
+        producer.sendMessage(record.key(), record.value());
     }
 
     @Override

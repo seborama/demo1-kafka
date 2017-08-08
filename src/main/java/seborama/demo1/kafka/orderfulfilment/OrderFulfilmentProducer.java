@@ -1,4 +1,4 @@
-package seborama.demo1.kafka;
+package seborama.demo1.kafka.orderfulfilment;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -8,28 +8,23 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.Properties;
 
-import static org.apache.kafka.common.utils.Utils.sleep;
+public class OrderFulfilmentProducer implements Closeable {
 
-public class OrderCreationProducer implements Closeable {
-
-    static final String ORDER_CREATION_TOPIC = "OrderCreationTopic";
+    private static final String ORDER_CREATION_TOPIC = "OrderFulfilmentTopic";
     private final Producer<String, String> producer;
 
-    public OrderCreationProducer() {
+    OrderFulfilmentProducer() {
         Properties props = configure();
         producer = new KafkaProducer<>(props);
     }
 
-    void sendMessages() {
-        for (int i = 0; i < 100; i++) {
-            String msg = "Message " + i;
-            producer.send(new ProducerRecord<>(ORDER_CREATION_TOPIC, msg));
-            System.out.println("Sent:" + msg);
-            sleep(1000);
-        }
+    void sendMessage(String key, String value) {
+        producer.send(new ProducerRecord<>(ORDER_CREATION_TOPIC, key, value));
+        System.out.println("Sent:" + value);
+//        sleep(1000);
     }
 
-    private static Properties configure() {
+    private Properties configure() {
         Properties props = new Properties();
         props.put("bootstrap.servers", "127.0.0.1:9092");
         props.put("acks", "all");

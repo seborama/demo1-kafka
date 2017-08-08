@@ -1,4 +1,4 @@
-package seborama.demo1.kafka;
+package seborama.demo1.kafka.orderdispatch;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -8,18 +8,18 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.Properties;
 
-public class OrderFulfilmentProducer implements Closeable {
+public class OrderDispatchProducer implements Closeable {
 
-    private static final String ORDER_CREATION_TOPIC = "OrderFulfilmentTopic";
+    private static final String ORDER_DISPATCH_TOPIC = "OrderDispatchTopic";
     private final Producer<String, String> producer;
 
-    OrderFulfilmentProducer() {
+    OrderDispatchProducer() {
         Properties props = configure();
         producer = new KafkaProducer<>(props);
     }
 
     void sendMessage(String key, String value) {
-        producer.send(new ProducerRecord<>(ORDER_CREATION_TOPIC, key, value));
+        producer.send(new ProducerRecord<>(ORDER_DISPATCH_TOPIC, key, value));
         System.out.println("Sent:" + value);
 //        sleep(1000);
     }
