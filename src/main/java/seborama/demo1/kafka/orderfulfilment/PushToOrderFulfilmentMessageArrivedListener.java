@@ -1,16 +1,17 @@
 package seborama.demo1.kafka.orderfulfilment;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import seborama.demo1.kafka.KafkaProducer;
 import seborama.demo1.kafka.MessageArrivedListener;
 
 import java.io.Closeable;
 import java.io.IOException;
 
 public class PushToOrderFulfilmentMessageArrivedListener implements MessageArrivedListener, Closeable {
-    private final OrderFulfilmentProducer producer;
+    private final KafkaProducer producer;
 
-    PushToOrderFulfilmentMessageArrivedListener() {
-        this.producer = new OrderFulfilmentProducer();
+    PushToOrderFulfilmentMessageArrivedListener(int sleepDuration) {
+        this.producer = OrderFulfilmentProducer.create(sleepDuration);
     }
 
     @Override

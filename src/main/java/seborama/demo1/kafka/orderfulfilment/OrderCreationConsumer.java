@@ -4,6 +4,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import seborama.demo1.kafka.MessageArrivedListener;
+import seborama.demo1.kafka.ordercreation.OrderCreationProducer;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -11,7 +12,6 @@ import java.util.Collections;
 import java.util.Properties;
 
 import static org.apache.kafka.common.utils.Utils.sleep;
-import static seborama.demo1.kafka.ordercreation.OrderCreationProducer.ORDER_CREATION_TOPIC;
 
 public class OrderCreationConsumer implements Closeable {
 
@@ -19,9 +19,9 @@ public class OrderCreationConsumer implements Closeable {
     private KafkaConsumer<String, String> consumer;
     private MessageArrivedListener listener;
 
-    OrderCreationConsumer() {
+    OrderCreationConsumer(int sleepDuration) {
         final Properties props = configure();
-        listener = new PushToOrderFulfilmentMessageArrivedListener();
+        listener = new PushToOrderFulfilmentMessageArrivedListener(sleepDuration);
 
         consumer = joinConsumerGroup(props);
     }
@@ -40,7 +40,7 @@ public class OrderCreationConsumer implements Closeable {
 
     private static KafkaConsumer<String, String> joinConsumerGroup(Properties props) {
         KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(props);
-        kafkaConsumer.subscribe(Collections.singletonList(ORDER_CREATION_TOPIC));
+        kafkaConsumer.subscribe(Collections.singletonList(OrderCreationProducer.TOPIC_NAME));
         return kafkaConsumer;
     }
 
