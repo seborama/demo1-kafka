@@ -14,21 +14,23 @@ public class OrderCreationProducer implements Closeable {
 
     public static final String ORDER_CREATION_TOPIC = "OrderCreationTopic";
     private final Producer<String, String> producer;
-    private final long sleepDuration;
+    private final int numberOfMessages;
+    private final int sleepDuration;
 
     public static OrderCreationProducer create() {
         Properties props = configure();
         Producer<String, String> producer = new KafkaProducer<>(props);
-        return new OrderCreationProducer(producer, 1000L);
+        return new OrderCreationProducer(producer, 100, 1000);
     }
 
-    OrderCreationProducer(Producer<String, String> producer, long sleepDuration) {
+    OrderCreationProducer(Producer<String, String> producer, int numberOfMessages, int sleepDuration) {
         this.producer = producer;
+        this.numberOfMessages = numberOfMessages;
         this.sleepDuration = sleepDuration;
     }
 
     public void sendMessages() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < numberOfMessages; i++) {
             String msg = "Message " + i;
             producer.send(new ProducerRecord<>(ORDER_CREATION_TOPIC, msg));
             System.out.println("Sent:" + msg);

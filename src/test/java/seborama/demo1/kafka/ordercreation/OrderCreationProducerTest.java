@@ -4,7 +4,8 @@ import org.apache.kafka.clients.producer.MockProducer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.Before;
 import org.junit.Test;
-import static org.assertj.core.api.Assertions.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class OrderCreationProducerTest {
     private MockProducer<String, String> mockProducer;
@@ -20,9 +21,10 @@ public class OrderCreationProducerTest {
 
     @Test
     public void sendMessages() throws Exception {
-        try (OrderCreationProducer orderCreationProducer = new OrderCreationProducer(mockProducer, 0L)) {
-            orderCreationProducer.sendMessages();
-            assertThat(mockProducer.history().size()).isEqualTo(100);
+        int numberOfMessages = 12;
+        try (OrderCreationProducer unit = new OrderCreationProducer(mockProducer, numberOfMessages, 0)) {
+            unit.sendMessages();
+            assertThat(mockProducer.history().size()).isEqualTo(numberOfMessages);
         }
     }
 
