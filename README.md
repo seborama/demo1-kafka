@@ -52,3 +52,12 @@ java -cp target/kafka-java-example-0.1.0-SNAPSHOT-jar-with-dependencies.jar sebo
 ## Streams
 
 Micro-service architecture evolved: from imperative ("how") to declarative ("what") design.
+
+## Userful CLI
+
+### Number of messages in the topic
+
+```bash
+kafka-run-class kafka.tools.GetOffsetShell --broker-list :9092 --topic OrderCreationTopic --time -1 --offsets 1 | awk -F  ":" '{sum += $3} END {print sum}'
+```
+
