@@ -21,7 +21,7 @@ public class OrderCreationProducerTest {
 
     @Test
     public void sendMessages() throws Exception {
-        int numberOfMessages = 12;
+        int numberOfMessages = 7;
         try (OrderCreationProducer unit = new OrderCreationProducer(mockProducer, numberOfMessages, 0)) {
             unit.sendMessages();
             assertThat(mockProducer.history().size()).isEqualTo(numberOfMessages);
