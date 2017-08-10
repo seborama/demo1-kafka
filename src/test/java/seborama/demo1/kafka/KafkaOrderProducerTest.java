@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class KafkaProducerTest {
+public class KafkaOrderProducerTest {
     private MockProducer<String, String> mockProducer;
 
     @Before
@@ -22,15 +22,15 @@ public class KafkaProducerTest {
     @Test
     public void sendMessages() throws Exception {
         final String topicName = "aTopicName";
-        try (KafkaProducer unit = getKafkaProducer(topicName, mockProducer)) {
+        try (KafkaOrderProducer unit = getKafkaProducer(topicName, mockProducer)) {
             unit.sendMessage("aKey", "aValue");
             assertThat(mockProducer.history().size()).isEqualTo(1);
             assertThat(mockProducer.history().get(0).topic()).isEqualTo(topicName);
         }
     }
 
-    public static KafkaProducer getKafkaProducer(final String topicName,
-                                                 final MockProducer<String, String> mockProducer) {
-        return new KafkaProducer(topicName, mockProducer, 0);
+    public static KafkaOrderProducer getKafkaProducer(final String topicName,
+                                                      final MockProducer<String, String> mockProducer) {
+        return new KafkaOrderProducer(topicName, mockProducer, 0);
     }
 }

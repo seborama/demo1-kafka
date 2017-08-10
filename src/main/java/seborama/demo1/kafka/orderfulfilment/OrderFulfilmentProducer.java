@@ -1,12 +1,12 @@
 package seborama.demo1.kafka.orderfulfilment;
 
-import seborama.demo1.kafka.KafkaProducer;
+import seborama.demo1.kafka.KafkaOrderProducer;
 
 public class OrderFulfilmentProducer {
 
     public static final String TOPIC_NAME = "OrderFulfilmentTopic";
 
-    static KafkaProducer create(int sleepDuration) {
-        return KafkaProducer.create(TOPIC_NAME, sleepDuration);
+    static KafkaOrderProducer create(int sleepDuration) {
+        return KafkaOrderProducer.create(TOPIC_NAME, sleepDuration);
     }
 }

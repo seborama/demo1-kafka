@@ -9,21 +9,21 @@ import java.util.Properties;
 
 import static org.apache.kafka.common.utils.Utils.sleep;
 
-public class KafkaProducer implements Closeable {
+public class KafkaOrderProducer implements Closeable {
 
     private final String topicName;
     private final Producer<String, String> producer;
     private final int sleepDuration;
 
-    public static KafkaProducer create(final String topicName, int sleepDuration) {
+    public static KafkaOrderProducer create(final String topicName, int sleepDuration) {
         Properties props = configure();
         Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<>(props);
-        return new KafkaProducer(topicName, producer, sleepDuration);
+        return new KafkaOrderProducer(topicName, producer, sleepDuration);
     }
 
-    KafkaProducer(final String topicName,
-                  final Producer<String, String> producer,
-                  final int sleepDuration) {
+    KafkaOrderProducer(final String topicName,
+                       final Producer<String, String> producer,
+                       final int sleepDuration) {
         this.topicName = topicName;
         this.producer = producer;
         this.sleepDuration = sleepDuration;
