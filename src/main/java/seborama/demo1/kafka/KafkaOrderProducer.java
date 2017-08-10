@@ -1,5 +1,6 @@
 package seborama.demo1.kafka;
 
+import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
@@ -17,7 +18,7 @@ public class KafkaOrderProducer implements Closeable {
 
     public static KafkaOrderProducer create(final String topicName, int sleepDuration) {
         Properties props = configure();
-        Producer<String, String> producer = new org.apache.kafka.clients.producer.KafkaProducer<>(props);
+        Producer<String, String> producer = new KafkaProducer<>(props);
         return new KafkaOrderProducer(topicName, producer, sleepDuration);
     }
 

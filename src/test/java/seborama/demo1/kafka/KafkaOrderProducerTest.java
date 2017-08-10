@@ -8,6 +8,7 @@ import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class KafkaOrderProducerTest {
+
     private MockProducer<String, String> mockProducer;
 
     @Before
@@ -30,7 +31,7 @@ public class KafkaOrderProducerTest {
     }
 
     public static KafkaOrderProducer getKafkaProducer(final String topicName,
-                                                      final MockProducer<String, String> mockProducer) {
+                                               final MockProducer<String, String> mockProducer) {
         return new KafkaOrderProducer(topicName, mockProducer, 0);
     }
 }

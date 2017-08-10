@@ -22,7 +22,7 @@ public class OrderCreationProducerTest {
     }
 
     @Test
-    public void sendMessages() throws Exception {
+    public void itSendsBulkMessages() throws Exception {
         final String topicName = "aTopicName";
         final int numberOfMessages = 7;
         try (KafkaOrderProducer unit = KafkaOrderProducerTest.getKafkaProducer(topicName, mockProducer)) {

@@ -1,5 +1,6 @@
 package seborama.demo1.kafka;
 
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -13,7 +14,7 @@ import static org.apache.kafka.common.utils.Utils.sleep;
 
 public class KafkaOrderConsumer implements Closeable {
 
-    private final KafkaConsumer<String, String> consumer;
+    private final Consumer<String, String> consumer;
     private final MessageArrivedListener listener;
     private final int sleepDuration;
 
@@ -22,11 +23,11 @@ public class KafkaOrderConsumer implements Closeable {
                                             final int sleepDuration,
                                             final MessageArrivedListener listener) {
         final Properties props = configure(groupName);
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+        Consumer<String, String> consumer = new KafkaConsumer<>(props);
         return new KafkaOrderConsumer(consumer, topicName, sleepDuration, listener);
     }
 
-    KafkaOrderConsumer(final KafkaConsumer<String, String> consumer,
+    KafkaOrderConsumer(final Consumer<String, String> consumer,
                        final String topicName,
                        final int sleepDuration,
                        final MessageArrivedListener listener) {
