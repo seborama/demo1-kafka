@@ -29,3 +29,6 @@ target/
 .idea/
 kafka-java-example.iml
 
+# OS files
+.DS_Store
+
