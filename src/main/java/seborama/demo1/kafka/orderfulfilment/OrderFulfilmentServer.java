@@ -8,6 +8,7 @@ public class OrderFulfilmentServer {
 
     public static void main(String[] args) throws IOException {
         try (KafkaOrderConsumer consumer = OrderCreationConsumer.create(1000)) {
+            System.out.println("Order fulfilment server running...");
             consumer.consumerLoop();
         }
     }

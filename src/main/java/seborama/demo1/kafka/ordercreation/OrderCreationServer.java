@@ -8,6 +8,7 @@ public class OrderCreationServer {
 
     public static void main(String[] args) throws IOException {
         try (KafkaOrderProducer producer = OrderCreationProducer.create(1000)) {
+            System.out.println("Order creation server running...");
             OrderCreationProducer.sendMessages(producer, 100);
         }
     }
