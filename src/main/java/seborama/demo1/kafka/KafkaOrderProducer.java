@@ -19,12 +19,11 @@ public class KafkaOrderProducer implements Closeable {
     public static KafkaOrderProducer create(final String topicName, int sleepDuration) {
         Properties props = configure();
         Producer<String, String> producer = new KafkaProducer<>(props);
-        return new KafkaOrderProducer(topicName, producer, sleepDuration);
+        return new KafkaOrderProducer(topicName, sleepDuration, producer);
     }
 
     KafkaOrderProducer(final String topicName,
-                       final Producer<String, String> producer,
-                       final int sleepDuration) {
+                       final int sleepDuration, final Producer<String, String> producer) {
         this.topicName = topicName;
         this.producer = producer;
         this.sleepDuration = sleepDuration;

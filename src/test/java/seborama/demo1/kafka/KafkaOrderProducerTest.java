@@ -32,6 +32,6 @@ public class KafkaOrderProducerTest {
 
     public static KafkaOrderProducer getKafkaProducer(final String topicName,
                                                final MockProducer<String, String> mockProducer) {
-        return new KafkaOrderProducer(topicName, mockProducer, 0);
+        return new KafkaOrderProducer(topicName, 0, mockProducer);
     }
 }
