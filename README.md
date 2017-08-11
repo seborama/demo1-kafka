@@ -22,25 +22,25 @@ mvn package
 ### Run the order creation server
 
 ```bash
-java -cp target/kafka-java-example-0.1.0-SNAPSHOT-jar-with-dependencies.jar seborama.demo1.kafka.OrderCreationServer
+./scripts/startOrderCreationServer.sh
 ```
 
 ### Run the order fulfilment server
 
 ```bash
-java -cp target/kafka-java-example-0.1.0-SNAPSHOT-jar-with-dependencies.jar seborama.demo1.kafka.OrderFulfilmentServer
+./scripts/startOrderFulfilmentServer.sh
 ```
 
 ### Run the order dispatch server
 
 ```bash
-java -cp target/kafka-java-example-0.1.0-SNAPSHOT-jar-with-dependencies.jar seborama.demo1.kafka.OrderDispatchServer
+./scripts/startOrderDispatchServer.sh
 ```
 
 ### Run the order completion server
 
 ```bash
-java -cp target/kafka-java-example-0.1.0-SNAPSHOT-jar-with-dependencies.jar seborama.demo1.kafka.OrderCompletionServer
+./scripts/startOrderCompletionServer.sh
 ```
 
 ## Producers
