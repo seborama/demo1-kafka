@@ -7,9 +7,13 @@ import java.io.IOException;
 public class OrderCreationServer {
 
     public static void main(String[] args) throws IOException {
-        try (KafkaOrderProducer producer = OrderCreationProducer.create(1000)) {
+        startServer(1000, 100);
+    }
+
+    private static void startServer(int sleepDuration, int numberOfMessages) throws IOException {
+        try (KafkaOrderProducer producer = OrderCreationProducer.create(sleepDuration)) {
             System.out.println("Order creation server running...");
-            OrderCreationProducer.sendMessages(producer, 100);
+            OrderCreationProducer.sendMessages(producer, numberOfMessages);
         }
     }
 }

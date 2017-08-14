@@ -13,4 +13,11 @@ public class ConsoleArgumentsTest {
         assertThat(unit.get("")).isEmpty();
     }
 
+    @Test
+    public void itReturnsSomethingMapWhenOneArgIsSupplied() throws Exception {
+        String[] args = new String[]{"-sleepduration", "1000"};
+        ConsoleArguments unit = new ConsoleArguments(args);
+        assertThat(unit.get("SleepDuration").orElse("Wrong value")).isEqualTo(1000);
+    }
+
 }

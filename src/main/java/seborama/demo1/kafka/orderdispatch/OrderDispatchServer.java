@@ -7,9 +7,13 @@ import java.io.IOException;
 public class OrderDispatchServer {
 
     public static void main(String[] args) throws IOException {
-        try (KafkaOrderConsumer consumer = OrderFulfilmentConsumer.create(1000)) {
+        startServer(1000, 100);
+    }
+
+    private static void startServer(int sleepDuration, int numberOfMessages) throws IOException {
+        try (KafkaOrderConsumer consumer = OrderFulfilmentConsumer.create(sleepDuration)) {
             System.out.println("Order dispatch server running...");
-            consumer.consumerLoop();
+            consumer.consumerLoop(numberOfMessages);
         }
     }
 }

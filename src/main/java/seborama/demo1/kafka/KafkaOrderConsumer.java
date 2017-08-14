@@ -38,8 +38,8 @@ public class KafkaOrderConsumer implements Closeable {
         subscribeToTopic(topicName);
     }
 
-    public void consumerLoop() {
-        while (true) {
+    public void consumerLoop(int numberOfMessages) {
+        for (int i = 1; i <= numberOfMessages; i++) {
             ConsumerRecords<String, String> records = consumer.poll(100);
             for (ConsumerRecord<String, String> record : records) {
                 System.out.println("Partition: " + record.partition() + " Offset: " + record.offset()

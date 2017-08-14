@@ -1,34 +1,30 @@
 package seborama.demo1.kafka;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class ConsoleArguments {
-    private Map<String, String> argumentsMap;
+    private Map<String, Object> argumentsMap;
 
     public ConsoleArguments(String[] args) {
         argumentsMap = parse(args);
     }
 
-    private Map<String, String> parse(String[] args) {
-//        Optional<String> maybeKey = Optional.of("");
-//        for (String arg : args) {
-//            maybeKey.ifPresent();
-//            if (!key.isEmpty()) {
-//                arguments.put(key, arg);
-//                key = "";
-//            } else {
-//                switch (arg.toLowerCase()) {
-//                    case "-sleepduration":
-//                        key = "SleepDuration";
-//                }
-//            }
-//        }
-        return new HashMap<>();
+    private Map<String, Object> parse(String[] args) {
+        Map<String, Object> argumentsMap = new HashMap<>();
+        Iterator<String> itr = Arrays.asList(args).iterator();
+
+        while (itr.hasNext()) {
+            switch (itr.next().toLowerCase()) {
+                case "-sleepduration":
+                    if (itr.hasNext())
+                        argumentsMap.put("SleepDuration", Integer.valueOf(itr.next()));
+            }
+        }
+
+        return argumentsMap;
     }
 
-    public Optional<String> get(String name) {
+    public Optional<Object> get(String name) {
         return Optional.ofNullable(argumentsMap.get(name));
     }
 }

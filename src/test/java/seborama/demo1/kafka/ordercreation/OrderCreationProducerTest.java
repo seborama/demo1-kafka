@@ -27,9 +27,10 @@ public class OrderCreationProducerTest {
         final int numberOfMessages = 7;
         try (KafkaOrderProducer unit = KafkaOrderProducerTest.getKafkaProducer(topicName, mockProducer)) {
             OrderCreationProducer.sendMessages(unit, numberOfMessages);
-            assertThat(mockProducer.history().size()).isEqualTo(numberOfMessages);
-            assertThat(mockProducer.history().get(0).topic()).isEqualTo(topicName);
         }
+
+        assertThat(mockProducer.history().size()).isEqualTo(numberOfMessages);
+        assertThat(mockProducer.history().get(0).topic()).isEqualTo(topicName);
     }
 
 }

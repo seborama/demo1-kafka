@@ -32,17 +32,11 @@ public class KafkaOrderConsumerTest {
         try (KafkaOrderConsumer unit = getKafkaOrderConsumer(topicName, mockConsumer, listener)) {
             configureKafkaOrderConsumer(topicName, partitionNumber);
 
-            Thread one = new Thread(unit::consumerLoop);
-            try {
-                one.start();
-            } catch (Exception ignored) {
-            }
-            while (!one.isAlive()) ;
-
             ConsumerRecord<String, String> consumerRecord = new ConsumerRecord<>(topicName, partitionNumber, offset, "mykey", "myvalue0");
             ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, "mykey", "myvalue0");
             mockConsumer.addRecord(consumerRecord);
-            one.join(500);
+
+            unit.consumerLoop(1);
 
             assertThat(((TestMessageArrivedListener) listener).getNumRecords()).isEqualTo(1);
             assertThat(((TestMessageArrivedListener) listener).getRecords().contains(producerRecord)).isTrue();
