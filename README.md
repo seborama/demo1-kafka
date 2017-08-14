@@ -3,11 +3,11 @@
 Ordering System:
 
   - Order creation
-  - Order Fulfilment
+  - Order fulfilment
   - Order dispatch
   - Order completion
-  - TBC: Order returns?
 
+![Image of Ordering System](https://raw.githubusercontent.com/seborama/demo1-kafka/master/docs/Kafka%20Demo1%20-%20Producer%20Consumer%20Architecture.png)
 
 ## Running the project
 
