@@ -1,14 +1,13 @@
 package seborama.demo1.kafka;
 
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.common.TopicPartition;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.apache.kafka.common.utils.Utils.sleep;
 
@@ -39,12 +38,20 @@ public class KafkaOrderConsumer implements Closeable {
     }
 
     public void consumerLoop(int numberOfMessages) {
-        for (int i = 1; i <= numberOfMessages; i++) {
+        for (int i = 1; i <= numberOfMessages; ) {
             ConsumerRecords<String, String> records = consumer.poll(100);
             for (ConsumerRecord<String, String> record : records) {
                 System.out.println("Partition: " + record.partition() + " Offset: " + record.offset()
                         + " Value: " + record.value() + " ThreadID: " + Thread.currentThread().getId());
                 listener.onMessageArrived(record);
+
+                // NOTE: committing after every message is NOT a good strategy for performance but useful for this demo.
+                // NOTE: you should set auto-commit to false
+                consumer.commitSync(Collections.singletonMap(
+                        new TopicPartition(record.topic(), record.partition()),
+                        new OffsetAndMetadata(record.offset() + 1)));
+
+                if (++i > numberOfMessages) break;
             }
             sleep(sleepDuration);
         }
@@ -58,8 +65,8 @@ public class KafkaOrderConsumer implements Closeable {
         Properties props = new Properties();
         props.put("bootstrap.servers", "127.0.0.1:9092");
         props.put("group.id", groupName);
-        props.put("enable.auto.commit", "true");
-        props.put("auto.commit.interval.ms", "5000");
+        props.put("enable.auto.commit", "false");
+        props.put("auto.commit.interval.ms", "5000"); // NOTE: large for purpose of demo to show auto-commit feature behaviour (when set to true)
         props.put("auto.offset.reset", "earliest");
         props.put("session.timeout.ms", "10000");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
@@ -69,6 +76,9 @@ public class KafkaOrderConsumer implements Closeable {
 
     @Override
     public void close() throws IOException {
+        System.out.printf("Closing consumer - Topic name: %s", consumer.assignment().stream()
+                .map(TopicPartition::topic)
+                .collect(Collectors.joining(", ")));
         consumer.close();
     }
 }

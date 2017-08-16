@@ -11,36 +11,34 @@ Ordering System:
 
 ## Running the project
 
-Under construction...
-
 ### Build the project
 
 ```bash
-mvn package
+mvn clean package
 ```
 
 ### Run the order creation server
 
 ```bash
-./scripts/startOrderCreationServer.sh
+./scripts/startOrderCreationServer.sh [-sleepduration <time in milliseconds>] [-numbermessages <number of messages>]
 ```
 
 ### Run the order fulfilment server
 
 ```bash
-./scripts/startOrderFulfilmentServer.sh
+./scripts/startOrderFulfilmentServer.sh [-sleepduration <time in milliseconds>] [-numbermessages <number of messages>]
 ```
 
 ### Run the order dispatch server
 
 ```bash
-./scripts/startOrderDispatchServer.sh
+./scripts/startOrderDispatchServer.sh [-sleepduration <time in milliseconds>] [-numbermessages <number of messages>]
 ```
 
 ### Run the order completion server
 
 ```bash
-./scripts/startOrderCompletionServer.sh
+./scripts/startOrderCompletionServer.sh [-sleepduration <time in milliseconds>] [-numbermessages <number of messages>]
 ```
 
 ## Producers
