@@ -17,10 +17,11 @@ public class OrderDispatchServer {
                 consoleArguments.getAsInteger(NUMBER_OF_MESSAGES).orElse(100));
     }
 
-    private static void startServer(int sleepDuration, int numberOfMessages) throws IOException {
+    public static void startServer(int sleepDuration, int numberOfMessages) throws IOException {
         try (KafkaOrderConsumer consumer = OrderFulfilmentConsumer.create(sleepDuration)) {
             System.out.println("Order dispatch server running...");
             consumer.consumerLoop(numberOfMessages);
+            System.out.println("Order dispatch server finished");
         }
     }
 }

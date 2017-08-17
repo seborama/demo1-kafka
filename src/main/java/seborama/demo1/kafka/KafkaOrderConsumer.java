@@ -1,11 +1,14 @@
 package seborama.demo1.kafka;
 
 import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.common.Metric;
+import org.apache.kafka.common.MetricName;
 import org.apache.kafka.common.TopicPartition;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -16,6 +19,7 @@ public class KafkaOrderConsumer implements Closeable {
     private final Consumer<String, String> consumer;
     private final MessageArrivedListener listener;
     private final int sleepDuration;
+    private boolean terminationFlag;
 
     public static KafkaOrderConsumer create(final String topicName,
                                             final String groupName,
@@ -33,31 +37,44 @@ public class KafkaOrderConsumer implements Closeable {
         this.consumer = consumer;
         this.sleepDuration = sleepDuration;
         this.listener = listener;
+        terminationFlag = false;
 
         subscribeToTopic(topicName);
     }
 
-    public void consumerLoop(int numberOfMessages) {
-        for (int i = 1; i <= numberOfMessages; ) {
-            ConsumerRecords<String, String> records = consumer.poll(100);
+    public Map<MetricName, ? extends Metric> consumerLoop(int numberOfMessages) {
+        for (int i = 1; i <= numberOfMessages && !terminationFlag; ) {
+            System.out.println("initiating poll");
+            ConsumerRecords<String, String> records = pollConsumerForRecords();
+            System.out.println("out of poll");
             for (ConsumerRecord<String, String> record : records) {
                 System.out.println("Partition: " + record.partition() + " Offset: " + record.offset()
                         + " Value: " + record.value() + " ThreadID: " + Thread.currentThread().getId());
                 listener.onMessageArrived(record);
+                commitSyncConsumer(record);
 
-                // NOTE: committing after every message is NOT a good strategy for performance but useful for this demo.
-                // NOTE: you should set auto-commit to false
-                consumer.commitSync(Collections.singletonMap(
-                        new TopicPartition(record.topic(), record.partition()),
-                        new OffsetAndMetadata(record.offset() + 1)));
 
                 if (++i > numberOfMessages) break;
             }
             sleep(sleepDuration);
         }
+
+        return consumer.metrics();
     }
 
-    private void subscribeToTopic(final String topicName) {
+    private synchronized void commitSyncConsumer(ConsumerRecord<String, String> record) {
+        // NOTE: committing after every message is NOT a good strategy for performance but useful for this demo.
+        // NOTE: you should set auto-commit to false
+        consumer.commitSync(Collections.singletonMap(
+                new TopicPartition(record.topic(), record.partition()),
+                new OffsetAndMetadata(record.offset() + 1)));
+    }
+
+    private synchronized ConsumerRecords<String, String> pollConsumerForRecords() {
+        return consumer.poll(100);
+    }
+
+    private synchronized void subscribeToTopic(final String topicName) {
         consumer.subscribe(Collections.singletonList(topicName));
     }
 
@@ -75,10 +92,20 @@ public class KafkaOrderConsumer implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
-        System.out.printf("Closing consumer - Topic name: %s", consumer.assignment().stream()
+    public synchronized void close() throws IOException {
+        System.out.printf("Closing consumer - Topic name: %s\n", consumer.assignment().stream()
                 .map(TopicPartition::topic)
                 .collect(Collectors.joining(", ")));
         consumer.close();
+        System.out.printf("Closed consumer - Topic name: %s\n", consumer.assignment().stream()
+                .map(TopicPartition::topic)
+                .collect(Collectors.joining(", ")));
+    }
+
+    public synchronized void stop() {
+        System.out.printf("Setting termination flag for consumer - Topic name: %s\n", consumer.assignment().stream()
+                .map(TopicPartition::topic)
+                .collect(Collectors.joining(", ")));
+        terminationFlag = true;
     }
 }
