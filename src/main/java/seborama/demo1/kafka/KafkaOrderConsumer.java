@@ -16,6 +16,7 @@ import static org.apache.kafka.common.utils.Utils.sleep;
 
 public class KafkaOrderConsumer implements Closeable {
 
+    private static String groupName;
     private final Consumer<String, String> consumer;
     private final MessageArrivedListener listener;
     private final int sleepDuration;
@@ -25,6 +26,7 @@ public class KafkaOrderConsumer implements Closeable {
                                             final String groupName,
                                             final int sleepDuration,
                                             final MessageArrivedListener listener) {
+        KafkaOrderConsumer.groupName = groupName;
         final Properties props = configure(groupName);
         Consumer<String, String> consumer = new KafkaConsumer<>(props);
         return new KafkaOrderConsumer(consumer, topicName, sleepDuration, listener);
@@ -44,9 +46,9 @@ public class KafkaOrderConsumer implements Closeable {
 
     public Map<MetricName, ? extends Metric> consumerLoop(int numberOfMessages) {
         for (int i = 1; i <= numberOfMessages && !terminationFlag; ) {
-            System.out.println("initiating poll");
+            System.out.printf("Group %s - initiating poll on topic %s\n", groupName, getTopicName());
             ConsumerRecords<String, String> records = pollConsumerForRecords();
-            System.out.println("out of poll");
+            System.out.printf("Group %s - completed poll on topic %s\n", groupName, getTopicName());
             for (ConsumerRecord<String, String> record : records) {
                 System.out.println("Partition: " + record.partition() + " Offset: " + record.offset()
                         + " Value: " + record.value() + " ThreadID: " + Thread.currentThread().getId());
@@ -59,6 +61,10 @@ public class KafkaOrderConsumer implements Closeable {
             sleep(sleepDuration);
         }
 
+        return getMetrics();
+    }
+
+    private synchronized Map<MetricName, ? extends Metric> getMetrics() {
         return consumer.metrics();
     }
 
@@ -93,19 +99,19 @@ public class KafkaOrderConsumer implements Closeable {
 
     @Override
     public synchronized void close() throws IOException {
-        System.out.printf("Closing consumer - Topic name: %s\n", consumer.assignment().stream()
-                .map(TopicPartition::topic)
-                .collect(Collectors.joining(", ")));
+        System.out.printf("Closing consumer - Topic name: %s\n", getTopicName());
         consumer.close();
-        System.out.printf("Closed consumer - Topic name: %s\n", consumer.assignment().stream()
-                .map(TopicPartition::topic)
-                .collect(Collectors.joining(", ")));
+        System.out.printf("Closed consumer - Topic name: %s\n", getTopicName());
     }
 
-    public synchronized void stop() {
-        System.out.printf("Setting termination flag for consumer - Topic name: %s\n", consumer.assignment().stream()
+    private synchronized String getTopicName() {
+        return consumer.assignment().stream()
                 .map(TopicPartition::topic)
-                .collect(Collectors.joining(", ")));
+                .collect(Collectors.joining(", "));
+    }
+
+    public void stop() {
+        System.out.printf("Setting termination flag for consumer - Topic name: %s\n", getTopicName());
         terminationFlag = true;
     }
 }

@@ -27,7 +27,9 @@ public class EndToEndTest {
 
         OrderServer orderCompletionServer = new OrderCompletionServer(1);
         Map<MetricName, ? extends Metric> orderCompletionMetrics = orderCompletionServer.startServer(10);
+
         System.out.println("orderCompletionMetrics = " + orderCompletionMetrics);
+
         System.out.println("Completed E2E");
     }
 
