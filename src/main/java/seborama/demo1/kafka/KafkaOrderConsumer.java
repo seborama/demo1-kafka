@@ -1,5 +1,6 @@
 package seborama.demo1.kafka;
 
+import com.sun.deploy.util.StringUtils;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.Metric;
 import org.apache.kafka.common.MetricName;
@@ -10,6 +11,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 import static org.apache.kafka.common.utils.Utils.sleep;
@@ -17,6 +20,7 @@ import static org.apache.kafka.common.utils.Utils.sleep;
 public class KafkaOrderConsumer implements Closeable {
 
     private static String groupName;
+    private final ReadWriteLock lock;
     private final Consumer<String, String> consumer;
     private final MessageArrivedListener listener;
     private final int sleepDuration;
@@ -40,15 +44,14 @@ public class KafkaOrderConsumer implements Closeable {
         this.sleepDuration = sleepDuration;
         this.listener = listener;
         terminationFlag = false;
+        lock = new ReentrantReadWriteLock();
 
         subscribeToTopic(topicName);
     }
 
     public Map<MetricName, ? extends Metric> consumerLoop(int numberOfMessages) {
         for (int i = 1; i <= numberOfMessages && !terminationFlag; ) {
-            System.out.printf("Group %s - initiating poll on topic %s\n", groupName, getTopicName());
             ConsumerRecords<String, String> records = pollConsumerForRecords();
-            System.out.printf("Group %s - completed poll on topic %s\n", groupName, getTopicName());
             for (ConsumerRecord<String, String> record : records) {
                 System.out.println("Partition: " + record.partition() + " Offset: " + record.offset()
                         + " Value: " + record.value() + " ThreadID: " + Thread.currentThread().getId());
@@ -64,30 +67,54 @@ public class KafkaOrderConsumer implements Closeable {
         return getMetrics();
     }
 
-    private synchronized Map<MetricName, ? extends Metric> getMetrics() {
-        return consumer.metrics();
+    private Map<MetricName, ? extends Metric> getMetrics() {
+        lock.readLock().lock();
+        try {
+            return consumer.metrics();
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
-    private synchronized void commitSyncConsumer(ConsumerRecord<String, String> record) {
+    private void commitSyncConsumer(ConsumerRecord<String, String> record) {
         // NOTE: committing after every message is NOT a good strategy for performance but useful for this demo.
         // NOTE: you should set auto-commit to false
-        consumer.commitSync(Collections.singletonMap(
-                new TopicPartition(record.topic(), record.partition()),
-                new OffsetAndMetadata(record.offset() + 1)));
+        lock.writeLock().lock();
+        try {
+            consumer.commitSync(Collections.singletonMap(
+                    new TopicPartition(record.topic(), record.partition()),
+                    new OffsetAndMetadata(record.offset() + 1)));
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
-    private synchronized ConsumerRecords<String, String> pollConsumerForRecords() {
-        return consumer.poll(100);
+    private ConsumerRecords<String, String> pollConsumerForRecords() {
+        System.out.printf("Group %s - initiating poll on topic %s\n", groupName, getTopicName());
+        lock.writeLock().lock();
+        try {
+            return consumer.poll(1000L);
+        } finally {
+            lock.writeLock().unlock();
+            System.out.printf("Group %s - completed poll on topic %s\n", groupName, getTopicName());
+        }
     }
 
-    private synchronized void subscribeToTopic(final String topicName) {
-        consumer.subscribe(Collections.singletonList(topicName));
+    private void subscribeToTopic(final String topicName) {
+        System.out.printf("Subscribing to topic name: %s\n", topicName);
+        lock.writeLock().lock();
+        try {
+            consumer.subscribe(Collections.singletonList(topicName));
+        } finally {
+            lock.writeLock().unlock();
+            System.out.printf("Subscribed to topic name: %s\n", topicName);
+        }
     }
 
     private static Properties configure(final String groupName) {
         Properties props = new Properties();
         props.put("bootstrap.servers", "127.0.0.1:9092");
-        props.put("group.id", groupName);
+        if (!isEmpty(groupName)) props.put("group.id", groupName);
         props.put("enable.auto.commit", "false");
         props.put("auto.commit.interval.ms", "5000"); // NOTE: large for purpose of demo to show auto-commit feature behaviour (when set to true)
         props.put("auto.offset.reset", "earliest");
@@ -97,21 +124,37 @@ public class KafkaOrderConsumer implements Closeable {
         return props;
     }
 
-    @Override
-    public synchronized void close() throws IOException {
-        System.out.printf("Closing consumer - Topic name: %s\n", getTopicName());
-        consumer.close();
-        System.out.printf("Closed consumer - Topic name: %s\n", getTopicName());
+    private static boolean isEmpty(String groupName) {
+        return groupName == null || groupName.isEmpty();
     }
 
-    private synchronized String getTopicName() {
-        return consumer.assignment().stream()
-                .map(TopicPartition::topic)
-                .collect(Collectors.joining(", "));
+    @Override
+    public void close() throws IOException {
+        System.out.printf("Closing consumer - Topic name: %s\n", getTopicName());
+
+        lock.writeLock().lock();
+        try {
+            consumer.close();
+        } finally {
+            lock.writeLock().unlock();
+            System.out.printf("Closed consumer - Topic name: %s\n", getTopicName());
+        }
+    }
+
+    private String getTopicName() {
+        lock.readLock().lock();
+        try {
+            return consumer.assignment().stream()
+                    .map(TopicPartition::topic)
+                    .collect(Collectors.joining(", "));
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public void stop() {
         System.out.printf("Setting termination flag for consumer - Topic name: %s\n", getTopicName());
         terminationFlag = true;
+        System.out.printf("Termination flag for consumer has been set - Topic name: %s\n", getTopicName());
     }
 }

@@ -7,6 +7,7 @@ import seborama.demo1.kafka.OrderServer;
 import seborama.demo1.kafka.ordercompletion.OrderCompletionServer;
 import seborama.demo1.kafka.ordercreation.OrderCreationServer;
 import seborama.demo1.kafka.orderdispatch.OrderDispatchServer;
+import seborama.demo1.kafka.orderfulfilment.OrderCreationConsumer;
 import seborama.demo1.kafka.orderfulfilment.OrderFulfilmentServer;
 
 import java.util.Map;
@@ -19,13 +20,13 @@ public class EndToEndTest {
         System.out.println("Starting E2E");
         OrderCreationServer.startServer(1, 10);
 
-        OrderServer orderFulfilmentServer = new OrderFulfilmentServer(1);
+        OrderServer orderFulfilmentServer = new OrderFulfilmentServer(OrderCreationConsumer.NO_CONSUMER_GROUP, 1);
         orderFulfilmentServer.startServer(10);
 
-        OrderServer orderDispatchServer = new OrderDispatchServer(1);
+        OrderServer orderDispatchServer = new OrderDispatchServer(OrderCreationConsumer.NO_CONSUMER_GROUP, 1);
         orderDispatchServer.startServer(10);
 
-        OrderServer orderCompletionServer = new OrderCompletionServer(1);
+        OrderServer orderCompletionServer = new OrderCompletionServer(OrderCreationConsumer.NO_CONSUMER_GROUP, 1);
         Map<MetricName, ? extends Metric> orderCompletionMetrics = orderCompletionServer.startServer(10);
 
         System.out.println("orderCompletionMetrics = " + orderCompletionMetrics);
@@ -45,17 +46,17 @@ public class EndToEndTest {
     }
 
     private void purgeOrderFulfilment() throws InterruptedException {
-        OrderServer orderServer = new OrderFulfilmentServer(1);
+        OrderServer orderServer = new OrderFulfilmentServer(OrderCreationConsumer.NO_CONSUMER_GROUP, 1);
         purgeTopic(orderServer);
     }
 
     private void purgeOrderDispatch() throws InterruptedException {
-        OrderServer orderServer = new OrderDispatchServer(1);
+        OrderServer orderServer = new OrderDispatchServer(OrderCreationConsumer.NO_CONSUMER_GROUP, 1);
         purgeTopic(orderServer);
     }
 
     private void purgeOrderCompletion() throws InterruptedException {
-        OrderServer orderServer = new OrderCompletionServer(1);
+        OrderServer orderServer = new OrderCompletionServer(OrderCreationConsumer.NO_CONSUMER_GROUP, 1);
         purgeTopic(orderServer);
     }
 

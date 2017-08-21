@@ -38,6 +38,8 @@ public class KafkaOrderProducer implements Closeable {
     private static Properties configure() {
         Properties props = new Properties();
         props.put("bootstrap.servers", "127.0.0.1:9092");
+//        props.put("advertised.host.name", "127.0.0.1");
+//        props.put("advertised.port", "9092");
         props.put("acks", "all");
         props.put("retries", 0);
         props.put("batch.size", 16384);

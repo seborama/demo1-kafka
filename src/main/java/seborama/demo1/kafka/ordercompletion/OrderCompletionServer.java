@@ -13,16 +13,17 @@ public class OrderCompletionServer extends OrderServer {
     public static void main(String[] args) throws IOException {
         ConsoleArguments consoleArguments = new ConsoleArguments(args);
 
-        OrderServer server = new OrderCompletionServer(consoleArguments
-                .getAsInteger(SLEEP_DURATION)
-                .orElse(1000));
+        OrderServer server = new OrderCompletionServer("order-dispatch-group-1",
+                consoleArguments
+                        .getAsInteger(SLEEP_DURATION)
+                        .orElse(1000));
 
         server.startServer(consoleArguments
                 .getAsInteger(NUMBER_OF_MESSAGES)
                 .orElse(100));
     }
 
-    public OrderCompletionServer(int sleepDuration) {
-        super("Order Completion", OrderDispatchConsumer.create(sleepDuration));
+    public OrderCompletionServer(String groupName, int sleepDuration) {
+        super("Order Completion", OrderDispatchConsumer.create(groupName, sleepDuration));
     }
 }

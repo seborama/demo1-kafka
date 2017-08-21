@@ -13,7 +13,7 @@ public class OrderFulfilmentServer extends OrderServer {
     public static void main(String[] args) throws IOException {
         ConsoleArguments consoleArguments = new ConsoleArguments(args);
 
-        OrderServer server = new OrderFulfilmentServer(consoleArguments
+        OrderServer server = new OrderFulfilmentServer("order-creation-group-1", consoleArguments
                 .getAsInteger(SLEEP_DURATION)
                 .orElse(1000));
 
@@ -22,8 +22,8 @@ public class OrderFulfilmentServer extends OrderServer {
                 .orElse(100));
     }
 
-    public OrderFulfilmentServer(int sleepDuration) {
-        super("Order Fulfilment", OrderCreationConsumer.create(sleepDuration));
+    public OrderFulfilmentServer(String groupName, int sleepDuration) {
+        super("Order Fulfilment", OrderCreationConsumer.create(groupName, sleepDuration));
     }
 
 }
