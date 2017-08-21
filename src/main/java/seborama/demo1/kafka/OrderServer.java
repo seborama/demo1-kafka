@@ -8,8 +8,10 @@ import java.util.Map;
 public abstract class OrderServer {
     private final String serverName;
     private final KafkaOrderConsumer consumer;
+    private boolean isActive;
 
     protected OrderServer(String serverName, KafkaOrderConsumer consumer) {
+        isActive = true;
         this.serverName = serverName;
         this.consumer = consumer;
     }
@@ -22,23 +24,27 @@ public abstract class OrderServer {
     }
 
     public void stopServer(long timeoutMillis) throws InterruptedException {
-        boolean isStopped = false;
+        if (!isActive) {
+            System.err.printf("Ignoring request to close %s server when it is already stopped\n", serverName);
+            return;
+        }
+
         long start = System.currentTimeMillis();
 
         while (System.currentTimeMillis() - start <= timeoutMillis) {
             if (this.consumer != null) {
                 this.consumer.stop();
-                isStopped = true;
+                isActive = false;
                 break;
             } else {
                 Thread.sleep(10);
             }
         }
 
-        if (isStopped)
-            System.err.printf("%s server has been stopped\n", serverName);
-        else
+        if (isActive)
             System.err.printf("Unable to stop %s server: not initialised\n", serverName);
+        else
+            System.err.printf("%s server has been stopped\n", serverName);
     }
 
     public String name() {

@@ -10,10 +10,12 @@ import static seborama.demo1.kafka.ConsoleArguments.SLEEP_DURATION;
 
 public class OrderCompletionServer extends OrderServer {
 
+    public static final String ORDER_COMPLETION_GROUP_1 = "order-completion-group-1";
+
     public static void main(String[] args) throws IOException {
         ConsoleArguments consoleArguments = new ConsoleArguments(args);
 
-        OrderServer server = new OrderCompletionServer("order-dispatch-group-1",
+        OrderServer server = new OrderCompletionServer(ORDER_COMPLETION_GROUP_1,
                 consoleArguments
                         .getAsInteger(SLEEP_DURATION)
                         .orElse(1000));

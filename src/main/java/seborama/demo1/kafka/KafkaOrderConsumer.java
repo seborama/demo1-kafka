@@ -1,6 +1,5 @@
 package seborama.demo1.kafka;
 
-import com.sun.deploy.util.StringUtils;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.Metric;
 import org.apache.kafka.common.MetricName;
@@ -90,13 +89,14 @@ public class KafkaOrderConsumer implements Closeable {
     }
 
     private ConsumerRecords<String, String> pollConsumerForRecords() {
-        System.out.printf("Group %s - initiating poll on topic %s\n", groupName, getTopicName());
+        String topicName = getTopicName();
+        System.out.printf("Group %s - initiating poll on topic %s\n", groupName, topicName);
         lock.writeLock().lock();
         try {
-            return consumer.poll(1000L);
+            return consumer.poll(100L);
         } finally {
             lock.writeLock().unlock();
-            System.out.printf("Group %s - completed poll on topic %s\n", groupName, getTopicName());
+            System.out.printf("Group %s - completed poll on topic %s\n", groupName, topicName);
         }
     }
 
@@ -114,7 +114,7 @@ public class KafkaOrderConsumer implements Closeable {
     private static Properties configure(final String groupName) {
         Properties props = new Properties();
         props.put("bootstrap.servers", "127.0.0.1:9092");
-        if (!isEmpty(groupName)) props.put("group.id", groupName);
+        props.put("group.id", groupName);
         props.put("enable.auto.commit", "false");
         props.put("auto.commit.interval.ms", "5000"); // NOTE: large for purpose of demo to show auto-commit feature behaviour (when set to true)
         props.put("auto.offset.reset", "earliest");
@@ -124,20 +124,18 @@ public class KafkaOrderConsumer implements Closeable {
         return props;
     }
 
-    private static boolean isEmpty(String groupName) {
-        return groupName == null || groupName.isEmpty();
-    }
-
     @Override
     public void close() throws IOException {
-        System.out.printf("Closing consumer - Topic name: %s\n", getTopicName());
+        String topicName = getTopicName();
+        System.out.printf("Closing consumer - Topic name: %s\n", topicName);
 
         lock.writeLock().lock();
         try {
+            terminationFlag = true;
             consumer.close();
         } finally {
             lock.writeLock().unlock();
-            System.out.printf("Closed consumer - Topic name: %s\n", getTopicName());
+            System.out.printf("Closed consumer - Topic name: %s\n", topicName);
         }
     }
 
@@ -153,8 +151,13 @@ public class KafkaOrderConsumer implements Closeable {
     }
 
     public void stop() {
-        System.out.printf("Setting termination flag for consumer - Topic name: %s\n", getTopicName());
-        terminationFlag = true;
-        System.out.printf("Termination flag for consumer has been set - Topic name: %s\n", getTopicName());
+        if (terminationFlag) {
+            System.out.println("Request to stop already terminated consumer ignored");
+        } else {
+            String topicName = getTopicName();
+            System.out.printf("Setting termination flag for consumer - Topic name: %s\n", topicName);
+            terminationFlag = true;
+            System.out.printf("Termination flag for consumer has been set - Topic name: %s\n", topicName);
+        }
     }
 }
