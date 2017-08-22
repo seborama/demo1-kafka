@@ -1,17 +1,27 @@
 package seborama.demo1.kafka.admin;
 
+import org.junit.After;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TopicAdminTest {
 
+    @After
+    public void tearDown() throws Exception {
+        SystemOutRedirector.revoke();
+    }
+
     @Test
     public void itCreatesATopic() throws Exception {
-        TopicAdmin unit = new TopicAdmin();
         final String topicName = "test-topic-" + System.currentTimeMillis();
-//        assertThat(unit.topicExists(topicName)).isFalse();
-        assertThat(unit.createTopic(topicName)).isTrue();
-        //unit.deleteTopic(topicName); // tear down
+        TopicAdmin unit = new TopicAdmin();
+
+        SystemOutRedirector.invoke();
+        unit.createTopic(topicName);
+        String output = SystemOutRedirector.revoke();
+
+        assertThat(output).contains("Created topic \"" + topicName + "\"");
+        unit.deleteTopic(topicName);
     }
 }

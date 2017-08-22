@@ -30,11 +30,11 @@ class SystemOutRedirector {
         System.setOut(old);
         String output = baos.toString();
 
+        ps.close();
         try {
             baos.close();
         } catch (IOException e) {
         }
-        ps.close();
 
         baos = null;
         ps = null;
