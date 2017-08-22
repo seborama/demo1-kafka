@@ -52,8 +52,8 @@ public class KafkaOrderProducer implements Closeable {
 
     @Override
     public void close() throws IOException {
-        System.out.printf("Closing producer - Topic name: %s\n", topicName);
+        System.out.printf("Closing producer - TopicAdmin name: %s\n", topicName);
         producer.close();
-        System.out.printf("Closed producer - Topic name: %s\n", topicName);
+        System.out.printf("Closed producer - TopicAdmin name: %s\n", topicName);
     }
 }

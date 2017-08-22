@@ -13,24 +13,27 @@ import static seborama.demo1.kafka.orderfulfilment.OrderFulfilmentServer.ORDER_F
 
 public class EndToEndTest {
 
+    public static final String E2E_TEST_TOPIC_NAME_SUFFIX = "-e2e-test";
+
     @Test
     public void itSendsBulkMessages() throws Exception {
         System.out.println("Starting E2E");
         OrderCreationServer.startServer(1, 10);
 
-        OrderServer orderFulfilmentServer = new OrderFulfilmentServer(ORDER_FULFILMENT_GROUP_1 + "_e2e_test", 1);
+        OrderServer orderFulfilmentServer = new OrderFulfilmentServer(ORDER_FULFILMENT_GROUP_1 + E2E_TEST_TOPIC_NAME_SUFFIX, 1);
         orderFulfilmentServer.startServer(10);
         orderFulfilmentServer.stopServer(500);
 
-        OrderServer orderDispatchServer = new OrderDispatchServer(ORDER_DISPATCH_GROUP_1 + "_e2e_test", 1);
+        OrderServer orderDispatchServer = new OrderDispatchServer(ORDER_DISPATCH_GROUP_1 + E2E_TEST_TOPIC_NAME_SUFFIX, 1);
         orderDispatchServer.startServer(10);
         orderDispatchServer.stopServer(500);
 
-        OrderServer orderCompletionServer = new OrderCompletionServer(ORDER_COMPLETION_GROUP_1 + "_e2e_test", 1);
+        OrderServer orderCompletionServer = new OrderCompletionServer(ORDER_COMPLETION_GROUP_1 + E2E_TEST_TOPIC_NAME_SUFFIX, 1);
         orderCompletionServer.stopServer(500);
         orderCompletionServer.startServer(10);
 
         // TODO: other than the test completing, find a better measure of success!
         System.out.println("Completed E2E");
     }
+
 }

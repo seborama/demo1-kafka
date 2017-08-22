@@ -127,7 +127,7 @@ public class KafkaOrderConsumer implements Closeable {
     @Override
     public void close() throws IOException {
         String topicName = getTopicName();
-        System.out.printf("Closing consumer - Topic name: %s\n", topicName);
+        System.out.printf("Closing consumer - TopicAdmin name: %s\n", topicName);
 
         lock.writeLock().lock();
         try {
@@ -135,7 +135,7 @@ public class KafkaOrderConsumer implements Closeable {
             consumer.close();
         } finally {
             lock.writeLock().unlock();
-            System.out.printf("Closed consumer - Topic name: %s\n", topicName);
+            System.out.printf("Closed consumer - TopicAdmin name: %s\n", topicName);
         }
     }
 
@@ -155,9 +155,9 @@ public class KafkaOrderConsumer implements Closeable {
             System.out.println("Request to stop already terminated consumer ignored");
         } else {
             String topicName = getTopicName();
-            System.out.printf("Setting termination flag for consumer - Topic name: %s\n", topicName);
+            System.out.printf("Setting termination flag for consumer - TopicAdmin name: %s\n", topicName);
             terminationFlag = true;
-            System.out.printf("Termination flag for consumer has been set - Topic name: %s\n", topicName);
+            System.out.printf("Termination flag for consumer has been set - TopicAdmin name: %s\n", topicName);
         }
     }
 }
