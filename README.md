@@ -51,7 +51,7 @@ mvn clean package
 
 Micro-service architecture evolved: from imperative ("how") to declarative ("what") design.
 
-## Userful CLI
+## Useful CLI
 
 ### Number of messages in the topic
 
