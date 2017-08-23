@@ -59,3 +59,15 @@ Micro-service architecture evolved: from imperative ("how") to declarative ("wha
 kafka-run-class kafka.tools.GetOffsetShell --broker-list :9092 --topic OrderCreationTopic --time -1 --offsets 1 | awk -F  ":" '{sum += $3} END {print sum}'
 ```
 
+### List consumer groups (new consumer groups i.e. kafka managed rather than zookeeper)
+
+```bash
+kafka-consumer-groups --bootstrap-server localhost:9092 --list
+```
+
+### Describe consumer group
+
+```bash
+kafka-consumer-groups --bootstrap-server localhost:9092 --describe --group order-fulfilment-group-1
+```
+
