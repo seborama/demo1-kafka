@@ -49,20 +49,21 @@ public class KafkaOrderConsumer implements Closeable {
     }
 
     public Map<MetricName, ? extends Metric> consumerLoop(int numberOfMessages) {
-        for (int i = 1; i <= numberOfMessages && !terminationFlag; ) {
+        int i = 0;
+        for (; i < numberOfMessages && !terminationFlag; ) {
             ConsumerRecords<String, String> records = pollConsumerForRecords();
             for (ConsumerRecord<String, String> record : records) {
                 System.out.println("Partition: " + record.partition() + " Offset: " + record.offset()
                         + " Value: " + record.value() + " ThreadID: " + Thread.currentThread().getId());
                 listener.onMessageArrived(record);
-                commitSyncConsumer(record);
+//                commitSyncConsumer(record);
 
-
-                if (++i > numberOfMessages) break;
+                i++;
             }
             sleep(sleepDuration);
         }
 
+        System.out.printf("Processed: %d message(s)\n", i);
         return getMetrics();
     }
 
@@ -115,7 +116,7 @@ public class KafkaOrderConsumer implements Closeable {
         Properties props = new Properties();
         props.put("bootstrap.servers", "127.0.0.1:9092");
         props.put("group.id", groupName);
-        props.put("enable.auto.commit", "false");
+        props.put("enable.auto.commit", "true");
         props.put("auto.commit.interval.ms", "5000"); // NOTE: large for purpose of demo to show auto-commit feature behaviour (when set to true)
         props.put("auto.offset.reset", "earliest");
         props.put("session.timeout.ms", "10000");
