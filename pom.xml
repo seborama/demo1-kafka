@@ -62,14 +62,6 @@
                                     <mainClass>
                                         <!--OrderCreationProducer-->
                                     </mainClass>
-                                    <!--<arguments>-->
-                                    <!--<systemProperties>-->
-                                    <!--<systemProperty>-->
-                                    <!--<key>java.security.policy</key>-->
-                                    <!--<value>/Users/44036761/Code/demo1-kafka/java.policy</value>-->
-                                    <!--</systemProperty>-->
-                                    <!--</systemProperties>-->
-                                    <!--</arguments>-->
                                 </manifest>
                             </archive>
                             <descriptorRefs>
@@ -87,7 +79,6 @@
                     <excludes>
                         <exclude>seborama.demo1.kafka.e2e.*</exclude>
                     </excludes>
-                    <!--<argLine>-Djava.security.manager -Djava.security.policy=/Users/44036761/Code/demo1-kafka/java.policy</argLine>-->
                 </configuration>
             </plugin>
         </plugins>
