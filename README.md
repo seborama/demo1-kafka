@@ -11,7 +11,15 @@ Ordering System:
 
 ## Running the project
 
-### Build the project
+### Initialise Kafka
+
+The End-2-End test will create the necessary Kafka topics with the desired features (partitions, etc).
+
+```bash
+mvn -Dtest=EndToEndTest test
+```
+
+### Package the project
 
 ```bash
 mvn clean package
