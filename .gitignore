@@ -4,6 +4,8 @@
 # Log files
 *.log
 *.out
+*.out.[0-9]*
+*.sh.[0-9]*
 
 # BlueJ files
 *.ctxt

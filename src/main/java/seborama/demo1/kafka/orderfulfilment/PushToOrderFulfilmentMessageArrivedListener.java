@@ -16,8 +16,8 @@ public class PushToOrderFulfilmentMessageArrivedListener implements MessageArriv
 
     @Override
     public void onMessageArrived(final ConsumerRecord<String, String> record) {
-        System.out.println("record received - ready to push to order fulfilment");
-        producer.sendMessage(record.key(), record.value());
+        String msg = String.format("%s - Fulfilment:1", record.value());
+        producer.sendMessage(record.key(), msg);
     }
 
     @Override

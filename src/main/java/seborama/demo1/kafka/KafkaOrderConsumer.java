@@ -107,14 +107,11 @@ public class KafkaOrderConsumer implements Closeable {
     }
 
     private ConsumerRecords<String, String> pollConsumerForRecords() {
-        String topicName = getTopicName();
-        System.out.printf("Group %s - initiating poll on topic %s\n", groupName, topicName);
         lock.writeLock().lock();
         try {
             return consumer.poll(100L);
         } finally {
             lock.writeLock().unlock();
-            System.out.printf("Group %s - completed poll on topic %s\n", groupName, topicName);
         }
     }
 
@@ -134,7 +131,7 @@ public class KafkaOrderConsumer implements Closeable {
         props.put("bootstrap.servers", "127.0.0.1:9092");
         props.put("group.id", groupName);
         props.put("enable.auto.commit", "true");
-        props.put("auto.commit.interval.ms", "5000"); // NOTE: large for purpose of demo to show auto-commit feature behaviour (when set to true)
+        props.put("auto.commit.interval.ms", "1000"); // NOTE: use large value for purpose of demo to show auto-commit feature behaviour (when set to true)
         props.put("auto.offset.reset", "earliest");
         props.put("session.timeout.ms", "10000");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");

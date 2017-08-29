@@ -20,6 +20,14 @@ public class OrderCompletionServer extends OrderServer {
                         .getAsInteger(SLEEP_DURATION)
                         .orElse(1000));
 
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                server.stopServer(500L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }));
+
         server.startServer(consoleArguments
                 .getAsInteger(NUMBER_OF_MESSAGES)
                 .orElse(100));

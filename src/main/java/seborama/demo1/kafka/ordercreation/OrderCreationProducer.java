@@ -11,9 +11,9 @@ public class OrderCreationProducer {
     }
 
     static void sendMessages(KafkaOrderProducer producer, int numberOfMessages) {
-        for (int i = 0; i < numberOfMessages; i++) {
-            String msg = "Message " + i;
-            producer.sendMessage(null, msg);
+        for (int i = 1; i <= numberOfMessages; i++) {
+            String msg = String.format("Message %d - Creation:1", i);
+            producer.sendMessage(String.format("%d", i), msg);
         }
     }
 
