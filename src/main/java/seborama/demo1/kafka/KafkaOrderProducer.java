@@ -29,9 +29,9 @@ public class KafkaOrderProducer implements Closeable {
         this.sleepDuration = sleepDuration;
     }
 
-    public void sendMessage(final String key, final String value) {
-        producer.send(new ProducerRecord<>(topicName, key, value));
-        System.out.println("Sent:" + value);
+    public void sendMessage(final String key, final String msg) {
+        producer.send(new ProducerRecord<>(topicName, key, msg));
+        System.out.println("Sent:" + msg);
         sleep(sleepDuration);
     }
 

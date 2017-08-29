@@ -29,7 +29,9 @@ public class TopicAdmin implements Closeable {
                 "--partitions",
                 "5",
                 "--topic",
-                topicName
+                topicName,
+                "--config",
+                "retention.ms=86400000"
         };
         TopicCommandOptions topicCommandOptions = new TopicCommandOptions(arguments);
 

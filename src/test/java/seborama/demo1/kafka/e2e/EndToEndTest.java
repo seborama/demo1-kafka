@@ -1,5 +1,6 @@
 package seborama.demo1.kafka.e2e;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import seborama.demo1.kafka.OrderServer;
 import seborama.demo1.kafka.admin.TopicAdmin;
@@ -19,19 +20,22 @@ public class EndToEndTest {
 
     public static final String E2E_TEST_GROUP_NAME_SUFFIX = "-e2e-test";
 
+    @BeforeClass
+    public static void setUpOnce() throws Exception {
+        TopicAdmin topicAdmin = new TopicAdmin();
+        topicAdmin.createTopic(OrderCreationProducer.TOPIC_NAME);
+        topicAdmin.createTopic(OrderFulfilmentProducer.TOPIC_NAME);
+        topicAdmin.createTopic(OrderDispatchProducer.TOPIC_NAME);
+    }
+
     @Test
     public void itSendsBulkMessages() throws Exception {
-        TopicAdmin topicAdmin = new TopicAdmin();
-
-        topicAdmin.createTopic(OrderCreationProducer.TOPIC_NAME);
         OrderCreationServer.startServer(1, 10);
 
-        topicAdmin.createTopic(OrderFulfilmentProducer.TOPIC_NAME);
         OrderServer orderFulfilmentServer = new OrderFulfilmentServer(ORDER_FULFILMENT_GROUP_1 + E2E_TEST_GROUP_NAME_SUFFIX, 1);
         orderFulfilmentServer.startServer(10);
         orderFulfilmentServer.stopServer();
 
-        topicAdmin.createTopic(OrderDispatchProducer.TOPIC_NAME);
         OrderServer orderDispatchServer = new OrderDispatchServer(ORDER_DISPATCH_GROUP_1 + E2E_TEST_GROUP_NAME_SUFFIX, 1);
         orderDispatchServer.startServer(10);
         orderDispatchServer.stopServer();

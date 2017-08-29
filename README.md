@@ -1,23 +1,56 @@
 # Apache Kafka Java Examples
 
-Ordering System:
+Ordering System phases:
 
   - Order creation
   - Order fulfilment
   - Order dispatch
   - Order completion
 
+## Pub/Sub design
+
 ![Image of Ordering System](https://raw.githubusercontent.com/seborama/demo1-kafka/master/docs/Kafka%20Demo1%20-%20Producer%20Consumer%20Architecture.png)
 
-## Running the project
+## Topology design
 
-### Initialise Kafka
+(image to be added)
 
-The End-2-End test will create the necessary Kafka topics with the desired features (partitions, etc).
+## Preparing to run the project
+
+### Get Kafka
+
+The simplest approach from OSX is to use `brew`:
 
 ```bash
-mvn -Dtest=EndToEndTest test
+brew install kafka
 ```
+
+For the purpose of testing, I recommend editing `/usr/local/etc/kafka/server.properties` and make these changes:
+
+```
+delete.topic.enable=true
+listeners=PLAINTEXT://127.0.0.1:9092
+```
+
+### Initialise Kafka topics
+
+The End-2-End test will create the necessary Kafka topics with the desired features (partitions, etc) for "`seborama.demo2`".
+
+```bash
+mvn -Dtest=seborama.demo1.kafka.e2e.EndToEndTest test
+```
+
+For "`seborama.demo2`", you can use this command:
+
+```bash
+mvn -Dtest=seborama.demo2.kafka.e2e.EndToEndTest test
+```
+
+**BEWARE**
+
+Do not change topic partitioning once the stream has been initialised.
+
+When testing only, you can delete / reset the streams. In production, you simply just should **not** do that.
 
 ### Package the project
 
@@ -25,39 +58,67 @@ mvn -Dtest=EndToEndTest test
 mvn clean package
 ```
 
-### Run the order creation server
+## Running the project - producers / consumers
+
+### Producer
+
+#### Run the order creation server
 
 ```bash
 ./scripts/startOrderCreationServer.sh [-sleepduration <time in milliseconds>] [-numbermessages <number of messages>]
 ```
 
-### Run the order fulfilment server
+### Independent Consumers
+
+Consumers detached from a consumer group or separate consumer groups.
+
+More explanation TBA.
+
+### Coordinated Consumers (consumer groups)
+
+Note: it is possible and recommended to start several of each of the consumers.
+
+#### Run the order fulfilment server
 
 ```bash
 ./scripts/startOrderFulfilmentServer.sh [-sleepduration <time in milliseconds>] [-numbermessages <number of messages>]
 ```
 
-### Run the order dispatch server
+#### Run the order dispatch server
 
 ```bash
 ./scripts/startOrderDispatchServer.sh [-sleepduration <time in milliseconds>] [-numbermessages <number of messages>]
 ```
 
-### Run the order completion server
+#### Run the order completion server
 
 ```bash
 ./scripts/startOrderCompletionServer.sh [-sleepduration <time in milliseconds>] [-numbermessages <number of messages>]
 ```
 
-## Producers
-
-## Independent Consumers
-
-## Coordinated Consumers (consumer groups)
-
 ## Streams
 
 Micro-service architecture evolved: from imperative ("how") to declarative ("what") design.
+
+## Running the stream
+
+### Generate the stream's input data
+
+```bash
+./scripts/generateDemo2Messages.sh
+```
+
+### Run the stream
+
+```bash
+./scripts/startDemo2Stream.sh
+```
+
+### Produce messages for the stream
+
+```bash
+./scripts/startDemo2Producer.sh
+```
 
 ## Useful CLI
 
@@ -78,4 +139,3 @@ kafka-consumer-groups --bootstrap-server localhost:9092 --list
 ```bash
 kafka-consumer-groups --bootstrap-server localhost:9092 --describe --group order-fulfilment-group-1
 ```
-
