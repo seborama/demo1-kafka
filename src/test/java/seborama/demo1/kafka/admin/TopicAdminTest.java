@@ -2,6 +2,7 @@ package seborama.demo1.kafka.admin;
 
 import org.junit.After;
 import org.junit.Test;
+import seborama.SystemOutRedirector;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

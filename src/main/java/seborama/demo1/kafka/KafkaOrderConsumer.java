@@ -51,17 +51,16 @@ public class KafkaOrderConsumer implements Closeable {
 
     public Map<MetricName, ? extends Metric> consumerLoop(int numberOfMessages) {
         int i = 0;
+        long idleConsumerStartTime = System.currentTimeMillis();
         for (; i < numberOfMessages && !terminationFlag; ) {
-            long pollStartTime = System.currentTimeMillis();
             ConsumerRecords<String, String> records = pollConsumerForRecords();
-            if (System.currentTimeMillis() - pollStartTime > 300_000L) {
+            if (System.currentTimeMillis() - idleConsumerStartTime > 300_000L) {
                 System.out.println("Polling timeout: topic has been idled for longer than set-tolerance");
                 break;
             }
 
             for (ConsumerRecord<String, String> record : records) {
-                System.out.println("Partition: " + record.partition() + " Offset: " + record.offset()
-                        + " Value: " + record.value() + " ThreadID: " + Thread.currentThread().getId());
+                idleConsumerStartTime = System.currentTimeMillis();
                 listener.onMessageArrived(record);
                 // commitSyncConsumer(record);
 

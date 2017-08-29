@@ -1,15 +1,15 @@
-package seborama.demo1.kafka.admin;
+package seborama;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 
-class SystemOutRedirector {
+public class SystemOutRedirector {
     private static ByteArrayOutputStream baos;
     private static PrintStream ps;
     private static PrintStream old;
 
-    static synchronized void invoke() {
+    public static synchronized void invoke() {
         if (isRedirected()) return;
 
         baos = new ByteArrayOutputStream();
@@ -23,7 +23,7 @@ class SystemOutRedirector {
         return baos != null && ps != null && old != null;
     }
 
-    static synchronized String revoke() {
+    public static synchronized String revoke() {
         if (!isRedirected()) return null;
 
         System.out.flush();
