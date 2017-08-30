@@ -132,7 +132,7 @@ public class KafkaOrderConsumer implements Closeable {
         props.put("bootstrap.servers", "127.0.0.1:9092");
         props.put("group.id", groupName);
         props.put("enable.auto.commit", "true");
-        props.put("auto.commit.interval.ms", "1000"); // NOTE: use large value for purpose of demo to show auto-commit feature behaviour (when set to true)
+        props.put("auto.commit.interval.ms", String.format(KafkaOrderConsumer.AUTO_COMMIT_INTERVAL_MS)); // NOTE: use large value for purpose of demo to show auto-commit feature behaviour (when set to true)
         props.put("auto.offset.reset", "earliest");
         props.put("session.timeout.ms", "10000");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
