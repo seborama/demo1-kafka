@@ -21,7 +21,7 @@ public class OrderFulfilmentServer extends OrderServer {
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                server.stopServer(500L);
+                server.stopServer();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

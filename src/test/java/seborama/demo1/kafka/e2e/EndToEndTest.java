@@ -29,16 +29,16 @@ public class EndToEndTest {
         topicAdmin.createTopic(OrderFulfilmentProducer.TOPIC_NAME);
         OrderServer orderFulfilmentServer = new OrderFulfilmentServer(ORDER_FULFILMENT_GROUP_1 + E2E_TEST_GROUP_NAME_SUFFIX, 1);
         orderFulfilmentServer.startServer(10);
-        orderFulfilmentServer.stopServer(500);
+        orderFulfilmentServer.stopServer();
 
         topicAdmin.createTopic(OrderDispatchProducer.TOPIC_NAME);
         OrderServer orderDispatchServer = new OrderDispatchServer(ORDER_DISPATCH_GROUP_1 + E2E_TEST_GROUP_NAME_SUFFIX, 1);
         orderDispatchServer.startServer(10);
-        orderDispatchServer.stopServer(500);
+        orderDispatchServer.stopServer();
 
         OrderServer orderCompletionServer = new OrderCompletionServer(ORDER_COMPLETION_GROUP_1 + E2E_TEST_GROUP_NAME_SUFFIX, 1);
-        orderCompletionServer.stopServer(500);
         orderCompletionServer.startServer(10);
+        orderCompletionServer.stopServer();
 
         // TODO: other than the test completing, find a better measure of success!
     }

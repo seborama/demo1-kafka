@@ -23,32 +23,22 @@ public abstract class OrderServer {
         return metrics;
     }
 
-    public void stopServer(long timeoutMillis) throws InterruptedException {
-        if (!isActive) {
-            System.err.printf("Ignoring request to close %s server when it is already stopped\n", serverName);
+    public void stopServer() throws InterruptedException {
+        if (!isServerRunning()) {
+            System.err.printf("Ignoring request to close %s server when it is not running\n", serverName);
             return;
         }
 
-        long start = System.currentTimeMillis();
+        this.consumer.stop();
+        isActive = false;
+        System.err.printf("%s server has been stopped\n", serverName);
+    }
 
-        while (System.currentTimeMillis() - start <= timeoutMillis) {
-            if (this.consumer != null) {
-                this.consumer.stop();
-                isActive = false;
-                break;
-            } else {
-                Thread.sleep(10);
-            }
-        }
-
-        if (isActive)
-            System.err.printf("Unable to stop %s server: not initialised\n", serverName);
-        else
-            System.err.printf("%s server has been stopped\n", serverName);
+    private boolean isServerRunning() {
+        return isActive && this.consumer != null;
     }
 
     public String name() {
         return this.serverName;
     }
-
 }

@@ -108,11 +108,21 @@ public class KafkaOrderConsumer implements Closeable {
     }
 
     private ConsumerRecords<String, String> pollConsumerForRecords() {
+        if (terminationFlag) return ConsumerRecords.empty();
+
         lock.writeLock().lock();
         try {
             return consumer.poll(100L);
         } finally {
             lock.writeLock().unlock();
+        }
+    }
+
+    private void waitForAutoCommit() {
+        try {
+            Thread.sleep(AUTO_COMMIT_INTERVAL_MS + 500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -123,7 +133,6 @@ public class KafkaOrderConsumer implements Closeable {
             consumer.subscribe(Collections.singletonList(topicName));
         } finally {
             lock.writeLock().unlock();
-            System.out.printf("Subscribed to topic name: %s\n", topicName);
         }
     }
 
@@ -132,7 +141,7 @@ public class KafkaOrderConsumer implements Closeable {
         props.put("bootstrap.servers", "127.0.0.1:9092");
         props.put("group.id", groupName);
         props.put("enable.auto.commit", "true");
-        props.put("auto.commit.interval.ms", String.format(KafkaOrderConsumer.AUTO_COMMIT_INTERVAL_MS)); // NOTE: use large value for purpose of demo to show auto-commit feature behaviour (when set to true)
+        props.put("auto.commit.interval.ms", String.format("%d", AUTO_COMMIT_INTERVAL_MS)); // NOTE: use large value for purpose of demo to show auto-commit feature behaviour (when set to true)
         props.put("auto.offset.reset", "earliest");
         props.put("session.timeout.ms", "10000");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
@@ -148,10 +157,10 @@ public class KafkaOrderConsumer implements Closeable {
         lock.writeLock().lock();
         try {
             terminationFlag = true;
+            waitForAutoCommit();
             consumer.close();
         } finally {
             lock.writeLock().unlock();
-            System.out.printf("Closed consumer - TopicAdmin name: %s\n", topicName);
         }
     }
 
