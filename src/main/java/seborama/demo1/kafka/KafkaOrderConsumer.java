@@ -18,6 +18,7 @@ import static org.apache.kafka.common.utils.Utils.sleep;
 
 public class KafkaOrderConsumer implements Closeable {
 
+    private static Long AUTO_COMMIT_INTERVAL_MS = 1000L;
     private static String groupName;
     private final ReadWriteLock lock;
     private final Consumer<String, String> consumer;
