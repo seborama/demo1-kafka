@@ -34,7 +34,7 @@ listeners=PLAINTEXT://127.0.0.1:9092
 
 ### Initialise Kafka topics
 
-The End-2-End test will create the necessary Kafka topics with the desired features (partitions, etc) for "`seborama.demo2`".
+The End-2-End test will create the necessary Kafka topics with the desired features (partitions, etc) for "`seborama.demo1`".
 
 ```bash
 mvn -Dtest=seborama.demo1.kafka.e2e.EndToEndTest test
