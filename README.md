@@ -139,3 +139,9 @@ kafka-consumer-groups --bootstrap-server localhost:9092 --list
 ```bash
 kafka-consumer-groups --bootstrap-server localhost:9092 --describe --group order-fulfilment-group-1
 ```
+
+## See also
+
+I recommend this article on DZone for advanced offset management and only-once message processing:
+
+https://dzone.com/articles/kafka-clients-at-most-once-at-least-once-exactly-o
