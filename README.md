@@ -19,7 +19,7 @@ Ordering System phases:
 
 ### Get Kafka
 
-The simplest approach from OSX is to use `brew`:
+The simplest approach for OSX is to use `brew`:
 
 ```bash
 brew install kafka
